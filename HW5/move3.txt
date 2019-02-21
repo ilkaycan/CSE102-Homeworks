@@ -1,0 +1,128 @@
+int move(piece board[][8], int from_x, int from_y, int to_x, int to_y, player p)
+{
+	int numMove=0, count=0, x, y, ax, ay, i=0, listOfMove[16]="\0"/*Use definitions for movement array*/,tradeoff=0;
+
+	x=from_x-to_x;
+	y=from_y-to_y;
+	ax=abs(x);
+	ay=abs(y);
+	if(board[from_x][from_y]!=empty)
+	{
+		if(p==white){/*move for white*/
+		{
+			while(x!=to_x && y!=to_y)
+			{
+				if(board[x][y]==white_man)  //x ve y eksı deger alabılır hatalı
+				{
+					if((board[x-1][y]==black_man||board[x-1][y]==black_king) && board[x-2][y]==empty)
+					{
+						board[x][y]=empty;
+						board[x-1][y]=empty;
+						x-=2;
+						board[x][y]=white_man;
+						listOfMove[i]=UP;//UP goes two elements up on x axis !! careful !!
+						i++;
+					}
+					else if((board[x][y-1]==black_man||board[x][y-1]==black_king)&&(!(board[x][y+1]==black_man||board[x][y+1]==black_king)))
+					{
+						if(board[x][y-2]==empty)
+						{
+							board[x][y]=empty;
+							board[x][y-1]=empty;
+							y-=2;
+							board[x][y]=white_man;
+							listOfMove[i]=LEFT;
+							i++;
+						}
+					}
+					else if((!(board[x][y-1]==black_man||board[x][y-1]==black_king))&&(board[x][y+1]==black_man||board[x][y+1]==black_king))
+					{
+						if(board[x][y-2]==empty)
+						{
+							board[x][y]=empty;
+							y+=1;
+							board[x][y]=white_man;
+							listOfMove[i]=RIGHT;
+							i++;
+						}
+					}
+					else if((board[x][y-1]==black_man||board[x][y-1]==black_king)&&(board[x][y+1]==black_man||board[x][y+1]==black_king))//trade-off condition
+					{
+						if(board[x][y-2]==empty && board[x][y+2]==empty)
+						{
+							if(listOfMove[i]==RIGHT)
+							{
+								board[x][y]=empty;
+								board[x][y-1]=empty;
+								y-=2;
+								board[x][y]=white_man;
+								listOfMove[i]=LEFT;
+								i++;
+							}
+							if(listOfMove[i]==LEFT)
+							{
+								board[x][y]=empty;
+								y+=1;
+								board[x][y]=white_man;
+								listOfMove[i]=RIGHT;
+								i++;
+							}
+							else
+							{
+								board[x][y]=empty;
+								board[x][y-1]=empty;
+								y-=2;
+								board[x][y]=white_man;
+								listOfMove[i]=LEFT;
+								i++;
+							}
+						}
+						else if(board[x][y-2]==empty && board[x][y+2]!=empty)
+						{
+							board[x][y]=empty;
+							y-=1;
+							board[x][y]=white_man;
+							listOfMove[i]=LEFT;
+							i++;
+						}
+						else if(board[x][y-2]!=empty && board[x][y+2]==empty)
+						{
+							board[x][y]=empty;
+							y+=1;
+							board[x][y]=white_man;
+							listOfMove[i]=RIGHT;
+							i++;
+						}
+					}
+					else
+					{
+						if(from_x!=x||from_y!=y)
+						{
+							init_board(board);
+							i=0;
+						}
+					}
+				}
+				else if(board[x][y]==white_king)
+				{
+
+				}
+				else
+				{
+					printf("KaBooM");
+				}
+			}
+		}
+		else
+		{
+			while(x!=to_x && y!=to_y)
+			{
+					
+			}
+		}
+	}
+	else
+	{
+		printf("!KaBooM!");
+	}
+}

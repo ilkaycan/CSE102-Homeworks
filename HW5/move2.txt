@@ -1,0 +1,233 @@
+/* bu move fonksiyonlari da tam calismiyor ama yazinca atmak istedim*/
+/* tek tek yerine donguyle pespese yemesi icin tekrar yazmistim*/
+
+#define FRB 15
+typedef enum{up=30, down, right, left} direction;
+int move(piece board[][8], int from_x, int from_y, int to_x, int to_y, player p)
+{
+	direction dr[100];
+	int copy_b[8][8];
+	int old[100];
+	int pic[1];
+	int i, j, result=0;
+	int n=0; /*captured pieces*/
+	int a=0; /* index for direction*/
+	int one_sqr=1; /* man cant move more than one squre while not capturing */
+	int k=0; /* index for old location array*/
+	
+	for(i=0; i<8;i++)
+	{ /*to find right path make a copy of board*/
+		for(j=0;j<8;j++)
+		{
+			copy_b[i][j]=board[i][j];
+		}
+	}
+
+	while(one_sqr>0 && result>-1)
+	{
+		if(p==white)
+		{/*move for white*/
+			if(copy_b[from_x][from_y]==black_man || copy_b[from_x][from_y]==black_king){ /* checks for true piece */
+				result=-1;
+			}else if(copy_b[to_x][to_y]!=empty){ /* checks if destination is empty*/
+				result=-2;
+			}else if(copy_b[from_x][from_y]==empty || copy_b[from_x][from_y]==FRB){ /* checks if there is a piece */
+				result=-2;
+			}else if(copy_b[from_x][from_y]==white_man){ /* move for white man */
+				pic[0]=white_man;
+				if((copy_b[from_x-1][from_y]==black_king || copy_b[from_x-1][from_y]==black_man) && copy_b[from_x-2][from_y]==empty ){/*capture and up*/
+					if((from_x-2)==0){ /* checks for being king situation*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x-2][from_y]=white_king;
+						copy_b[from_x-1][from_y]=empty;
+						n++; 
+						dr[a]=up; 
+						a++;
+						old[k]=from_x;
+						k++;
+						from_x=from_x-2; /*update the current location*/
+					}else{
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x-2][from_y]=white_man;
+						copy_b[from_x-1][from_y]=empty;
+						n++; 
+						dr[a]=up; 
+						a++;
+						old[k]=from_x;
+						k++;
+						from_x=from_x-2;
+					}
+				}else if((copy_b[from_x][from_y+1]==black_king || copy_b[from_x][from_y+1]==black_man)&& copy_b[from_x][from_y+2]==empty){ /* capture and right*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x][from_y+2]=white_man;
+						copy_b[from_x][from_y+1]=empty;
+						n++; 
+						dr[a]=right; 
+						a++;
+						old[k]=from_y;
+						k++;
+						from_y=from_y+2;
+				}else if((copy_b[from_x][from_y-1]==black_king || copy_b[from_x][from_y-1]==black_man)&& copy_b[from_x][from_y-2]==empty){ /*capture and left*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x][from_y-2]=white_man;
+						copy_b[from_x][from_y-1]=empty;
+						n++; 
+						dr[a]=left; 
+						a++;
+						old[k]=from_y;
+						k++;
+						from_y=from_y-2;
+				}else if(copy_b[from_x-1][from_y]==empty){ /* no capture and up */
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x-1][from_y]=white_man;
+						dr[a]=up;
+						a++;
+						old[k]=from_x;
+						k++;
+						from_x=from_x-1;
+						one_sqr--;
+				} else if(copy_b[from_x][from_y+1]==empty){ /* no capture and right*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x][from_y+1]=white_man;
+						dr[a]=right;
+						a++;
+						old[k]=from_y;
+						k++;
+						from_y=from_y+1;
+						one_sqr--;
+				} else if(copy_b[from_x][from_y-1]==empty){ /* no capture and left*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x][from_y-1]=white_man;
+						dr[a]=left;
+						a++;
+						old[k]=from_y;
+						k++;
+						from_y=from_y-1;
+						one_sqr--;;
+				}
+			}	
+		}else if(p==black)
+		{/*move for black*/
+			if(copy_b[from_x][from_y]==white_man || copy_b[from_x][from_y]==white_king){ /* checks for true piece*/
+				result=-1;
+			}else if(copy_b[to_x][to_y]!=empty){ /* checks if destination is empty*/
+				result=-2;
+			}else if(copy_b[from_x][from_y]==empty || copy_b[from_x][from_y]==FRB){ /* checks if there is a piece */
+				result=-2;
+			}else if(copy_b[from_x][from_y]==black_man){ /*move for black man*/
+				pic[0]=black_man;
+				if((copy_b[from_x+1][from_y]==white_king || copy_b[from_x+1][from_y]==white_man)&&copy_b[from_x+2][from_y]==empty){/*capture and up*/
+					if((from_x+2)==0){ /* checks for being king situation*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x+2][from_y]=black_king;
+						copy_b[from_x+1][from_y]=empty;
+						n++; 
+						dr[a]=up; 
+						a++;
+						old[k]=from_x;
+						k++;
+						from_x=from_x-2; /*update the current location*/
+						printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+					}else{
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x+2][from_y]=black_man;
+						copy_b[from_x+1][from_y]=empty;
+						n++; 
+						dr[a]=up; 
+						a++;
+						old[k]=from_x;
+						k++;
+						from_x=from_x+2;
+							printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+					}
+				}else if((copy_b[from_x][from_y+1]==white_king || copy_b[from_x][from_y+1]==white_man)&&copy_b[from_x][from_y+2]==empty){ /* capture and right*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x][from_y+2]=black_man;
+						copy_b[from_x][from_y+1]=empty;
+						n++; 
+						dr[a]=right; 
+						a++;
+						old[k]=from_y;
+						k++;
+						from_y=from_y+2;
+							printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+				}else if((copy_b[from_x][from_y-1]==white_king || copy_b[from_x][from_y-1]==white_man)&&copy_b[from_x][from_y-2]==empty){ /*capture and left*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x][from_y-2]=black_man;
+						copy_b[from_x][from_y-1]=empty;
+						n++; 
+						dr[a]=left; 
+						a++;
+						old[k]=from_y;
+						k++;
+						from_y=from_y-2;
+							printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+				}else if(copy_b[from_x+1][from_y]==empty){ /* no capture and up */
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x+1][from_y]=black_man;
+						dr[a]=up;
+						a++;
+						old[k]=from_x;
+						k++;
+						one_sqr--;
+						printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+				} else if(copy_b[from_x][from_y+1]==empty){ /* no capture and right*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x][from_y+1]=black_man;
+						dr[a]=right;
+						a++;
+						old[k]=from_y;
+						k++;
+						from_y=from_y+1;
+						one_sqr--;
+						printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+				} else if(copy_b[from_x][from_y-1]==empty){ /* no capture and left*/
+						copy_b[from_x][from_y]=empty;
+						copy_b[from_x][from_y-1]=black_man;
+						dr[a]=left;
+						a++;
+						old[k]=from_y;
+						k++;
+						from_y=from_y-1;
+						one_sqr--;
+						printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+				}
+			}	
+		}	
+
+	/*	if((from_x!=to_x || from_y!= to_y)&& k>0 && a>0){  //dongunun ıcınde olmamalı pespese hareketlerı cıkmaz yol olarak ısaretler
+			if(dr[a]==up || dr[a]==down){     // dısarda olursa tekrar donguyu cagıramam??
+				copy_b[from_x][from_y]=FRB;
+				from_x = old[k];
+				copy_b[old[k]][from_y]=pic[0];
+				printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+			}else 
+				copy_b[from_x][from_y]=FRB;
+				from_y = old[k];
+				copy_b[from_x][old[k]]=pic[0]; //yedıgı tasları kontrol edıp gerı yerlestır
+				printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+			}
+			k--;
+			a--;
+			n--;
+			one_sqr=1;
+			printf("%d, %d, %d, %d \n", from_x, from_y, a, k);
+		} else {
+			return n;
+		}*/
+	}
+	if(n>=0){
+		result = n;
+	}
+ 	
+	for(i=0; i<8; i++){
+		for(j=0;j<8;j++){
+			/*if(copy_b[i][j]==FRB){
+				copy_b[i][j]=empty;
+			}*/
+			board[i][j]=copy_b[i][j];
+		}
+	}
+
+return result;
+}
